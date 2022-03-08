@@ -1,7 +1,10 @@
 .App {
   text-align: center;
 }
-
+.Student_List {
+  display: inline-block;
+  margin: 0px auto;
+}
 .App-logo {
   height: 40vmin;
   pointer-events: none;
