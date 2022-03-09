@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Student from "./Student";
 
 interface Istate {
@@ -6,26 +6,45 @@ interface Istate {
   roll: number;
   email: string;
 }
+function getLocalStorage() {
+  let list = localStorage.getItem("studentList");
+  if (list) {
+    return (list = JSON.parse(localStorage.getItem("studentList") || ""));
+  } else {
+    return [];
+  }
+}
 const StudentList = () => {
   const [student, setStudent] = useState<Istate>({} as Istate);
+  const [studentList, setStudentList] = useState<Istate[]>(getLocalStorage);
 
-  const [studentList, setStudentList] = useState<Istate[]>([]);
+  useEffect(() => {
+    localStorage.setItem("studentList", JSON.stringify(studentList));
+  }, [studentList]);
+
   const Onchange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setStudent({ ...student, [e.target.name]: e.target.value });
   };
-  const FormSubmit = (e: React.MouseEvent<HTMLFormElement, MouseEvent>) => {
+  const FormSubmit = () => {
     setStudentList([...studentList, student]);
     setStudent({ name: "", email: "", roll: 0 });
-    e.preventDefault();
   };
+
+  // console.log(studentList);
   const handleRemove = (roll: number) => {
     const NewStudentList = studentList.filter((st) => st.roll !== roll);
     setStudentList(NewStudentList);
   };
+  // useEffect(() => {}, [studentList]);
+  // useEffect(() => {
+  //   const list = JSON.parse(window.localStorage.getItem("studentList") || "");
+  //   setStudentList(list === "" ? [] : list);
+  //   console.log("list size", list.length);
+  // }, []);
   return (
     <div className="Student_List">
       <h1> 🦸 Student List</h1>
-      <form onSubmit={FormSubmit}>
+      <div>
         <input
           onChange={Onchange}
           type="text"
@@ -50,8 +69,10 @@ const StudentList = () => {
           placeholder="Enter Student Email"
         ></input>
 
-        <button type="submit">Add</button>
-      </form>
+        <button onClick={FormSubmit} type="submit">
+          Add
+        </button>
+      </div>
       {/* <StudentDemo name="Osman Goni" roll={1245}></StudentDemo> */}
       {studentList.map((student, index) => (
         <Student
